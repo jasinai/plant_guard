@@ -15,3 +15,11 @@
 *.exe
 *.out
 *.app
+
+# LaTeX stuff
+*.aux
+*.log
+*.nav
+*.out
+*.snm
+*.toc
