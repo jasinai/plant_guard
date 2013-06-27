@@ -8,3 +8,8 @@
 #define TWITTER_TOKEN "TWITTERTOKEN"
 #define TWITTER_DELAY 60000
 #define LIB_DOMAIN "arduino-tweet.appspot.com"
+
+//INITIAL PLANT CONFIG
+#define DRY 300
+#define WET 100
+#define DELTA_HUMID 20
