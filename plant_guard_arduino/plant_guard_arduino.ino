@@ -11,6 +11,7 @@
 #define VOLTAGE_FLIP_2 5
 #define WATER_BUTTON 2
 #define FLIP_TIMER 1000
+#define ONBOARD_LED 13
 
 //#define MEASURE_INTERVAL (10) // in seconds
 #define MEASURE_INTERVAL (60*15) // in seconds
@@ -38,7 +39,7 @@ void setup() {
   OCR1A = 15625;
   // Enable Timer1 output compare A interrupt
   TIMSK1 |= (1 << OCIE1A);
-  pinMode(13, OUTPUT);
+  pinMode(ONBOARD_LED, OUTPUT);
 
   Serial.begin(115200);
   pinMode(VOLTAGE_FLIP_1, OUTPUT);
@@ -126,7 +127,7 @@ ISR(INT0_vect)
 ISR(TIMER1_COMPA_vect)
 {
   seconds++;
-  digitalWrite(13, seconds & 1 ? HIGH : LOW);
+  digitalWrite(ONBOARD_LED, seconds & 1 ? HIGH : LOW);
 }
 
 void loop()
