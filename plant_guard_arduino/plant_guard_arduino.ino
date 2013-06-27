@@ -47,12 +47,12 @@ void setup() {
   pinMode(HUMID_IN, INPUT);
   twitter.setupWiFly();
   pinMode(WATER_BUTTON, INPUT);
-  digitalWrite(WATER_BUTTON, HIGH);
+  digitalWrite(WATER_BUTTON, HIGH); // if low, interrupt function is called
   delay(10);
   EIMSK |= (1 << INT0);     // Enable external interrupt INT0
   EICRA |= (1 << ISC01);    // Trigger INT0 on falling edge
   EIFR = (1 << INTF0);      // Reset Interrupt flag
-  sei();
+  sei(); // library function for interrrupt enabling
   //attachInterrupt(0, waterButton, FALLING);
   //twitter.post("I'm alive");
 
@@ -118,7 +118,7 @@ float measure_temperature()
 }
 
 
-ISR(INT0_vect)
+ISR(INT0_vect) // WATER_BUTTON is low (trigger on low because it was set to HIGH before)
 {
   watered++;
 }
