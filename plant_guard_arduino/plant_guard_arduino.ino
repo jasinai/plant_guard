@@ -9,6 +9,7 @@
 #define HUMID_IN A1
 #define VOLTAGE_FLIP_1 4
 #define VOLTAGE_FLIP_2 5
+#define WATER_VALVE 7
 #define WATER_BUTTON 2
 #define FLIP_TIMER 1000
 #define ONBOARD_LED 13
@@ -48,6 +49,8 @@ void setup() {
   pinMode(VOLTAGE_FLIP_1, OUTPUT);
   pinMode(VOLTAGE_FLIP_2, OUTPUT);
   pinMode(HUMID_IN, INPUT);
+  pinMode(WATER_VALVE, OUTPUT);
+  digitalWrite(WATER_VALVE, LOW);
   twitter.setupWiFly();
   pinMode(WATER_BUTTON, INPUT);
   digitalWrite(WATER_BUTTON, HIGH); // if low, interrupt function is called
@@ -141,10 +144,18 @@ void loop()
 
     last_humidity = humid_result;
     humid_result = measure_humidity();
+    if(humid_result > DRY - DELTA_HUMID){ // THIS IS WATAAAAAAAAA!
+      digitalWrite(WATER_VALVE, HIGH);
+      delay(3000);
+      digitalWrite(WATER_VALVE, LOW);
+      watered++;
+    }
+    
     if(last_humidity > humid_result && last_humidity - humid_result > DELTA_HUMID){ // plant was most likely watered
       humid_dry = last_humidity;
       humid_wet = humid_result;
     }
+    
     temperature = measure_temperature();
     if(temperature <= TOO_COLD){
       Serial.println(twitter.post("Mir ist kalt! Stell mich an einen wärmeren Ort. Aktuelle Temperatur: " + temperature));
