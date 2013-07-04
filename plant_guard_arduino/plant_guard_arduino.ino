@@ -14,7 +14,7 @@
 #define ONBOARD_LED 13
 
 //#define MEASURE_INTERVAL (10) // in seconds
-#define MEASURE_INTERVAL (60*15) // in seconds
+#define MEASURE_INTERVAL (60*1) // in seconds
 
 short watered = 0;
 int out = 0;
@@ -29,7 +29,6 @@ uint8_t count = 0;
 uint16_t humid_dry = DRY;
 uint16_t humid_wet = WET;
 uint16_t last_humidity = 0;
-
 
 void setup() {
   // Set up timer for counting seconds
@@ -148,10 +147,10 @@ void loop()
     }
     temperature = measure_temperature();
     if(temperature <= TOO_COLD){
-      Serial.println(twitter.post("Mir ist kalt! Stell mich an einen wärmeren Ort. Aktuelle Temperatur: %f", temperature));
+      Serial.println(twitter.post("Mir ist kalt! Stell mich an einen wärmeren Ort. Aktuelle Temperatur: " + temperature));
     }
-    if(temperature >= TOO_HOT){
-      Serial.println(twitter.post("Puh, ist das warm! Ein bisschen Schatten wäre nicht schlecht. Aktuelle Temperatur: %f", temperature));
+    else if(temperature >= TOO_HOT){
+      Serial.println(twitter.post("Puh, ist das warm! Ein bisschen Schatten wäre nicht schlecht. Aktuelle Temperatur: " + temperature));
     }
     Serial.println(humid_result);
     // output
