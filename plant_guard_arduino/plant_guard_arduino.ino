@@ -19,7 +19,7 @@
 short watered = 0;
 int out = 0;
 int temp_value = 0;
-float voltage = 0;
+float temperature = 0;
 uint16_t humid_result = 0;
 uint32_t seconds = 0, next_measurement = 0;
 uint16_t eeprom_count = 0;
@@ -146,7 +146,13 @@ void loop()
       humid_dry = last_humidity;
       humid_wet = humid_result;
     }
-    //voltage = measure_temperature();
+    temperature = measure_temperature();
+    if(temperature <= TOO_COLD){
+      Serial.println(twitter.post("Mir ist kalt! Stell mich an einen wärmeren Ort. Aktuelle Temperatur: %f", temperature));
+    }
+    if(temperature >= TOO_HOT){
+      Serial.println(twitter.post("Puh, ist das warm! Ein bisschen Schatten wäre nicht schlecht. Aktuelle Temperatur: %f", temperature));
+    }
     Serial.println(humid_result);
     // output
     //Serial.println(voltage);

@@ -13,3 +13,5 @@
 #define DRY 300
 #define WET 100
 #define DELTA_HUMID 20
+#define TOO_COLD 10 //degree celsius
+#define TOO_HOT 30 //degree celsius
