@@ -20,7 +20,7 @@
 short watered = 0;
 int out = 0;
 int temp_value = 0;
-uint16_t temperature = 0;
+uint8_t temperature = 0;
 uint16_t humid_result = 0;
 uint32_t seconds = 0, next_measurement = 0;
 uint16_t eeprom_count = 0;
@@ -119,7 +119,7 @@ float measure_temperature()
     // temperature sensing
     uint16_t temp_value = analogRead(TEMP_IN);
     //TODO avoid float?
-    return (uint16_t) (temp_value * 5.0 * 10.0) / 1023.0;
+    return (uint8_t) (temp_value * 5.0 * 10.0) / 1023.0;
 }
 
 
@@ -156,11 +156,14 @@ void loop()
     }
     
     temperature = measure_temperature();
+    string msg[141];
     if(temperature <= TOO_COLD){
-      Serial.println(twitter.post("Mir ist kalt! Stell mich an einen wärmeren Ort. Aktuelle Temperatur: " + temperature));
+      snprintf(msg, 141, "Mir ist kalt! Stell mich an einen wärmeren Ort. Aktuelle Temperatur: %u", temperature);
+      Serial.println(twitter.post(msg));
     }
     else if(temperature >= TOO_HOT){
-      Serial.println(twitter.post("Puh, ist das warm! Ein bisschen Schatten wäre nicht schlecht. Aktuelle Temperatur: " + temperature));
+      snprintf(msg, 141, "Puh, ist das warm! Ein bisschen Schatten wäre nicht schlecht. Aktuelle Temperatur: %u", temperature);
+      Serial.println(msg);
     }
     Serial.println(humid_result);
     // output
