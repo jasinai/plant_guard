@@ -52,8 +52,7 @@ void setup() {
   pinMode(WATER_VALVE, OUTPUT);
   digitalWrite(WATER_VALVE, LOW);
   twitter.setupWiFly();
-  pinMode(WATER_BUTTON, INPUT);
-  digitalWrite(WATER_BUTTON, HIGH); // if low, interrupt function is called
+  pinMode(WATER_BUTTON, INPUT_PULLUP);
   delay(10);
   EIMSK |= (1 << INT0);     // Enable external interrupt INT0
   EICRA |= (1 << ISC01);    // Trigger INT0 on falling edge
