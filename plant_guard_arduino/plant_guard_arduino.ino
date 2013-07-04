@@ -26,9 +26,9 @@ uint16_t eeprom_count = 0;
 WiFlyTwitter twitter;
 char s[160] = "";
 uint8_t count = 0;
-uint_16t humid_dry = DRY;
-uint_16t humid_wet = WET;
-uint_16t last_humidity = 0;
+uint16_t humid_dry = DRY;
+uint16_t humid_wet = WET;
+uint16_t last_humidity = 0;
 
 
 void setup() {
@@ -142,7 +142,7 @@ void loop()
 
     last_humidity = humid_result;
     humid_result = measure_humidity();
-    if(last_humidity > humid_result && last_humidity - humid_result > DELTA_HUMIDITY){ // plant was most likely watered
+    if(last_humidity > humid_result && last_humidity - humid_result > DELTA_HUMID){ // plant was most likely watered
       humid_dry = last_humidity;
       humid_wet = humid_result;
     }
