@@ -19,7 +19,7 @@
 short watered = 0;
 int out = 0;
 int temp_value = 0;
-float temperature = 0;
+uint16_t temperature = 0;
 uint16_t humid_result = 0;
 uint32_t seconds = 0, next_measurement = 0;
 uint16_t eeprom_count = 0;
@@ -118,7 +118,7 @@ float measure_temperature()
     // temperature sensing
     uint16_t temp_value = analogRead(TEMP_IN);
     //TODO avoid float?
-    return (temp_value * 5.0 * 10.0) / 1023.0;
+    return (uint16_t) (temp_value * 5.0 * 10.0) / 1023.0;
 }
 
 
