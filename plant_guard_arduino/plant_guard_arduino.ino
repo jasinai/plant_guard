@@ -7,12 +7,15 @@
 
 #define TEMP_IN A0
 #define HUMID_IN A1
+#define FILLED_IN A2
+
+#define WATER_BUTTON 2
 #define VOLTAGE_FLIP_1 4
 #define VOLTAGE_FLIP_2 5
 #define WATER_VALVE 7
-#define WATER_BUTTON 2
-#define FLIP_TIMER 1000
 #define ONBOARD_LED 13
+
+#define FLIP_TIMER 1000
 
 //#define MEASURE_INTERVAL (10) // in seconds
 #define MEASURE_INTERVAL (60*1) // in seconds
@@ -113,6 +116,19 @@ uint16_t measure_humidity()
   humid_value_2 = 1023 - analogRead(HUMID_IN);
   return (humid_value_1 + humid_value_2) / 2;
 }
+
+uint16_t fill_level()
+{
+  uint16_t water = analogRead(FILLED_IN);
+  water -= 920;//1023 * 4.5 / 5; //~920 bis 1002 --> 0 bis 82
+  return water;
+}
+
+boolean fill_level_good(uint16_t water)
+{
+  return (water >= 50);
+}
+
 
 float measure_temperature()
 {
