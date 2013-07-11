@@ -8,6 +8,8 @@
 
 #define TEMP_IN A0
 #define HUMID_IN A1
+#define FILL_IN A2
+
 #define VOLTAGE_FLIP_1 4
 #define VOLTAGE_FLIP_2 5
 #define WATER_VALVE 7
@@ -105,6 +107,23 @@ uint16_t measure_humidity()
   humid_value_2 = 1023 - analogRead(HUMID_IN);
   return (humid_value_1 + humid_value_2) / 2;
 }
+
+uint8_t water_fill_level()
+{
+  uint16_t water;
+  water = analogRead(FILL_IN);
+  water -= 1023*4.5/5.0; // 920-1023 --> 0-83
+  return (uint8_t)water;
+}
+
+boolean is_water_high(uint8_t water) {
+  return (water >= 55);
+}
+
+boolean is_water_middle(uint8_t water) {
+  return (water >= 30);
+}
+
 
 float measure_temperature()
 {
