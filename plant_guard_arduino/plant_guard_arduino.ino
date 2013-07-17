@@ -5,50 +5,34 @@
 #include <avr/sleep.h>
 #include "config.h"
 #include "WiFlyTwitter.h"
-#include <WProgram.h>
 
-#define TEMP_IN A0
-#define HUMID_IN A1
-#define FILL_IN A2
-
-#define VOLTAGE_FLIP_1 4
-#define VOLTAGE_FLIP_2 5
-#define WATER_VALVE 7
-#define BUTTON_PIN 2
-#define FLIP_TIMER 1000
-#define ONBOARD_LED 13
-#define EEPROM_COUNTER_ADDRESS 1022
-
-// Arbitrary constants for thresholds, adjust as necessary
-#define DRY 100
-#define WET 900
-#define DELTA_HUMID 50
-#define TOO_COLD 5
-#define TOO_HOT 30
-
-
-//#define MEASURE_INTERVAL (10) // in seconds
-#define MEASURE_INTERVAL (60*10) // in seconds
-
-#define ONLINE false
-
-short watered = 0;
 uint8_t button_pressed = 0;
 int out = 0;
 int temp_value = 0;
 uint8_t temperature = 0;
 uint16_t humid_result = 0;
+uint16_t last_humidity = 0;
+uint16_t humid_dry = DRY, humid_wet = WET;
+uint8_t water = 0;
 uint32_t seconds = 0, next_measurement = 0;
 uint16_t eeprom_count = 0;
 WiFlyTwitter twitter;
 char s[160] = "";
 uint8_t count = 0;
-uint16_t humid_dry = DRY;
-uint16_t humid_wet = WET;
-uint16_t last_humidity = 0;
-String twitter_water_text[] = {"Ah, das war erfrischend.", "Nichts geht über einen Schluck Wasser.", "Mein Wasservorrat geht zur Neige.", "Hilfe, mein Wasservorrat ist alle."};
-String twitter_temp_text[] = {"Mir ist warm. Es ist sind {x}°C. Stell mich woanders hin.", "Mir ist kalt. Mach mal die Heizung an!"};
-String twitter_random_text[] = {"Mir ist langweilig… komm doch mal vorbei und erzähl mir was!", "Guck mal aus dem Fenster. Ich glaub da passiert was.", "Zu spät geguckt."};
+
+//TEMPERATURE TEXTS
+const char *TOO_COLD_TEXT = "Mir ist kalt. Es ist sind %u°C. Mach mal die Heizung an!";
+const char *TOO_HOT_TEXT = "Mir ist warm. Es ist sind %u°C. Stell mich woanders hin.";
+//WATER/HUMIDITY TEXTS
+const char *WATER_EMPTY_TEXT = "Hilfe, mein Wasservorrat ist alle.";
+const char *WATER_ALMOST_EMPTY_TEXT = "Mein Wasservorrat geht zur Neige.";
+const char *WATERED_TEXT = "Ah, das war erfrischend.";
+const char *WATER_FROM_HUMAN_TEXT = "Mensch, gib mir Wasser!";
+//RANDOM TEXTS
+const char *RANDOM_TEXT_1 = "Mir ist langweilig… komm doch mal vorbei und erzähl mir was!";
+const char *RANDOM_TEXT_2 = "Guck mal aus dem Fenster. Ich glaub da passiert was.";
+const char *RANDOM_TEXT_3 = "Zu spät geguckt.";
+const char *RANDOM_TEXT_4 = "Lebst du noch oder du gießt du schon?";
 
 void setup() {
   // Set up timer for counting seconds
@@ -88,6 +72,45 @@ void setup() {
   next_measurement = seconds;
 }
 
+void loop()
+{
+  // Toggle LED every second so that we know the program is not stuck somewhere
+  digitalWrite(ONBOARD_LED, seconds & 1 ? HIGH : LOW);
+
+  if (seconds >= next_measurement) {
+    next_measurement += MEASURE_INTERVAL;
+    Serial.print("Measuring... ");
+
+    measure_humidity();
+    give_water();
+    was_watered();
+    Serial.println(humid_result);
+
+    measure_temperature();
+    Serial.println(temperature);
+    twitter_temperature();
+
+    // output
+    //Serial.println(voltage);
+    if(DEBUG)
+    {
+      humidity_to_eeprom();
+      humidity_to_twitter();
+    }
+  }
+
+  if (button_pressed)
+  {
+    print_or_reset_eeprom();
+  }
+
+  // Power down the microcontroller.
+  // Will wake up every second due to Timer1 compare match.
+  //asm("sleep\n");
+  //delay(100);
+  sleep_mode();
+}
+
 void setSensorPolarity(boolean flip){
   if(flip){
     digitalWrite(VOLTAGE_FLIP_1, HIGH);
@@ -99,7 +122,7 @@ void setSensorPolarity(boolean flip){
 }
 
 // humidity sensing
-uint16_t measure_humidity()
+void measure_humidity()
 {
   uint16_t humid_value_1, humid_value_2;
   setSensorPolarity(true);
@@ -109,9 +132,34 @@ uint16_t measure_humidity()
   setSensorPolarity(false);
   delay(FLIP_TIMER);
   humid_value_2 = 1023 - analogRead(HUMID_IN);
-  return (humid_value_1 + humid_value_2) / 2;
+  last_humidity = humid_result;
+  humid_result = (humid_value_1 + humid_value_2) / 2;
 }
 
+void give_water()
+{
+  if(humid_result > DRY - DELTA_HUMID){ // THIS IS WATAAAAAAAAA!
+    if(!is_water_middle())
+    {
+      if (ONLINE) Serial.println(twitter.post(WATER_FROM_HUMAN_TEXT));
+    }
+    else
+    {
+      digitalWrite(WATER_VALVE, HIGH);
+      delay(3000);
+      digitalWrite(WATER_VALVE, LOW);
+    }
+  }
+}
+
+void was_watered()
+{
+  if(last_humidity > humid_result && last_humidity - humid_result > DELTA_HUMID){ // plant was most likely watered
+    humid_dry = last_humidity;
+    humid_wet = humid_result;
+    if (ONLINE) Serial.println(twitter.post(WATERED_TEXT));
+  }
+}
 uint8_t water_fill_level()
 {
   uint16_t water;
@@ -120,21 +168,51 @@ uint8_t water_fill_level()
   return (uint8_t)water;
 }
 
-boolean is_water_high(uint8_t water) {
+boolean is_water_high() {
   return (water >= 55);
 }
 
-boolean is_water_middle(uint8_t water) {
+boolean is_water_middle() {
   return (water >= 30);
 }
 
+void check_water()
+{
+  water = water_fill_level();
+  if(!is_water_high() && is_water_middle())
+  {
+    if (ONLINE) Serial.println(twitter.post(WATER_ALMOST_EMPTY_TEXT));
+  }
+  else if(!is_water_high() && !is_water_middle())
+  {
+    if (ONLINE) Serial.println(twitter.post(WATER_EMPTY_TEXT));
+  }
+}
 
-float measure_temperature()
+void measure_temperature()
 {
     // temperature sensing
     uint16_t temp_value = analogRead(TEMP_IN);
-    //TODO avoid float?
-    return (uint8_t) (temp_value * 5.0 * 10.0) / 1023.0;
+    temperature =  (uint8_t) ((temp_value * 50) / 1023);
+}
+
+void twitter_temperature()
+{
+  if(temperature <= TOO_COLD){
+    post_temperature(TOO_COLD_TEXT);
+  }
+  else if(temperature >= TOO_HOT){
+    post_temperature(TOO_HOT_TEXT);
+  }
+}
+
+void post_temperature(const char *text)
+{
+  char msg[141];
+  snprintf(msg, 141, text, temperature);
+  msg[140] = '\0';  // snprintf doesn't write \0 if string is too long.
+  if (ONLINE) Serial.println(twitter.post(msg));
+  if (DEBUG) Serial.println(msg);
 }
 
 void read_out_eeprom() {
@@ -168,97 +246,44 @@ ISR(TIMER1_COMPA_vect)
   seconds++;
 }
 
-void loop()
+void humidity_to_eeprom()
 {
-  // Toggle LED every second so that we know the program is not stuck somewhere
-  digitalWrite(ONBOARD_LED, seconds & 1 ? HIGH : LOW);
-
-  if (seconds >= next_measurement) {
-    next_measurement += MEASURE_INTERVAL;
-    Serial.print("Measuring... ");
-
-    last_humidity = humid_result;
-    humid_result = measure_humidity();
-    if(humid_result > DRY - DELTA_HUMID){ // THIS IS WATAAAAAAAAA!
-      digitalWrite(WATER_VALVE, HIGH);
-      delay(3000);
-      digitalWrite(WATER_VALVE, LOW);
-      //watered++;
-    }
-    
-    if(last_humidity > humid_result && last_humidity - humid_result > DELTA_HUMID){ // plant was most likely watered
-      humid_dry = last_humidity;
-      humid_wet = humid_result;
-    }
-    
-    temperature = measure_temperature();
-    char msg[141];
-    if(temperature <= TOO_COLD){
-      snprintf(msg, 141, "Mir ist kalt! Stell mich an einen wärmeren Ort. Aktuelle Temperatur: %u", temperature);
-      msg[140] = '\0';  // snprintf doesn't write \0 if string is too long.
-      if (ONLINE) Serial.println(twitter.post(msg));
-    }
-    else if(temperature >= TOO_HOT){
-      snprintf(msg, 141, "Puh, ist das warm! Ein bisschen Schatten wäre nicht schlecht. Aktuelle Temperatur: %u", temperature);
-      msg[140] = '\0';  // snprintf doesn't write \0 if string is too long.
-      if (ONLINE) Serial.println(twitter.post(msg));
-    }
-    Serial.println(humid_result);
-    // output
-    //Serial.println(voltage);
-
-    // Store humidity values (scaled to 8 bit) in EEPROM
-    eeprom_count = eeprom_read_uint16(EEPROM_COUNTER_ADDRESS);
-    if (eeprom_count < EEPROM_COUNTER_ADDRESS)
-    {
-      EEPROM.write(eeprom_count, (uint8_t) (humid_result >> 2));
-      eeprom_count++;
-      eeprom_write_uint16(EEPROM_COUNTER_ADDRESS, eeprom_count);
-    }
-
-    sprintf(s+strlen(s), "%d ", humid_result);
-    count++;
-    if(count == 24)
-    {
-      if (ONLINE) Serial.println(twitter.post(s));
-      count = 0;
-      *s = '\0';
-    }
-    //unsigned long tmp = 1000UL * 60UL * 15UL - (millis() - timestamp);
-    //timestamp = millis();
-    //Serial.println(tmp);
-    //delay(tmp);
-  }
-
-  if(watered)
+  // Store humidity values (scaled to 8 bit) in EEPROM
+  eeprom_count = eeprom_read_uint16(EEPROM_COUNTER_ADDRESS);
+  if (eeprom_count < EEPROM_COUNTER_ADDRESS)
   {
-    Serial.println("Watered! Tweeting...");
-    if (ONLINE) Serial.println(twitter.post("Test"));
-    //Serial.println(watered);
-    watered = 0;
+    EEPROM.write(eeprom_count, (uint8_t) (humid_result >> 2));
+    eeprom_count++;
+    eeprom_write_uint16(EEPROM_COUNTER_ADDRESS, eeprom_count);
   }
+}
 
-  if (button_pressed)
+void humidity_to_twitter()
+{
+  sprintf(s+strlen(s), "%d ", humid_result);
+  count++;
+  if(count == 24)
   {
-    button_pressed = 0;
-    read_out_eeprom();
-
-    uint8_t i = 0, steps = 200;
-    for (i = 0; i < steps; i++)
-    {
-      if (digitalRead(BUTTON_PIN) == HIGH) break; // Escape when button is released.
-      delay(10);
-    }
-    if (i == steps) // The button was pressed during the whole loop.
-    {
-      Serial.println("Button was held for more than 2 seconds, will now erase EEPROM.");
-      eeprom_write_uint16(EEPROM_COUNTER_ADDRESS, 0);
-    }
+    if (ONLINE) Serial.println(twitter.post(s));
+    count = 0;
+    *s = '\0';
   }
+}
 
-  // Power down the microcontroller.
-  // Will wake up every second due to Timer1 compare match.
-  //asm("sleep\n");
-  //delay(100);
-  sleep_mode();
+void print_or_reset_eeprom()
+{
+  button_pressed = 0;
+  if(DEBUG) read_out_eeprom();
+
+  uint8_t i = 0, steps = 200;
+  for (i = 0; i < steps; i++)
+  {
+    if (digitalRead(BUTTON_PIN) == HIGH) break; // Escape when button is released.
+    delay(10);
+  }
+  if (i == steps && DEBUG) // The button was pressed during the whole loop.
+  {
+    Serial.println("Button was held for more than 2 seconds, will now erase EEPROM.");
+    eeprom_write_uint16(EEPROM_COUNTER_ADDRESS, 0);
+  }
 }
