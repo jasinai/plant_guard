@@ -5,6 +5,7 @@
 #include <avr/sleep.h>
 #include "config.h"
 #include "WiFlyTwitter.h"
+#include <WProgram.h>
 
 #define TEMP_IN A0
 #define HUMID_IN A1
@@ -45,6 +46,9 @@ uint8_t count = 0;
 uint16_t humid_dry = DRY;
 uint16_t humid_wet = WET;
 uint16_t last_humidity = 0;
+String twitter_water_text[] = {"Ah, das war erfrischend.", "Nichts geht über einen Schluck Wasser.", "Mein Wasservorrat geht zur Neige.", "Hilfe, mein Wasservorrat ist alle."};
+String twitter_temp_text[] = {"Mir ist warm. Es ist sind {x}°C. Stell mich woanders hin.", "Mir ist kalt. Mach mal die Heizung an!"};
+String twitter_random_text[] = {"Mir ist langweilig… komm doch mal vorbei und erzähl mir was!", "Guck mal aus dem Fenster. Ich glaub da passiert was.", "Zu spät geguckt."};
 
 void setup() {
   // Set up timer for counting seconds
