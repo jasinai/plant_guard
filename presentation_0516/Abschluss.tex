@@ -21,12 +21,12 @@
 
 \begin{document}
 {
-\usebackgroundtemplate{\includegraphics[width=\paperwidth]{Back.jpg}}%
+\usebackgroundtemplate{\includegraphics[width=\paperwidth]{Back.png}}%
 \begin{frame}
 %Title: leer, vielleicht noch unsere Namen einfügen
-\begin{figure}[H]
-\includegraphics[width=350px]{SprechblaseOR.png}
-\end{figure}
+	\begin{figure}[H]
+		\includegraphics[width=350px]{SprechblaseOR.png}
+	\end{figure}
 
 \end{frame}
 }
@@ -52,7 +52,7 @@
 	\end{itemize}
 \end{frame}
 
-\begin{frame}{\topic{Vorteile}}
+\begin{frame}{\topic{Vorteile des Plant Guard}}
 	\begin{itemize}
 		\item Pflanzeninfos über Twitter weltweit verfügbar
 		%\item Multiuser (z.B. für die Gießvertretung)
@@ -64,25 +64,23 @@
 
 \begin{frame}{\topic{Probleme}}
 	\begin{itemize}
-		\item Inkontinenz beim Start, da der Arduino beim Start einige Leitungen auf 1 zieht
+		\item Inkontinenz beim Start
 		\item wenn der PlantGuard zuviel gießt, könnte der Topf überlaufen
-		\item ziemlich großer Behälter, schlecht zu verstecken, leicht zu kippen
-		\item Flasche nur mit Silikon 100\% dicht
-		\item viele Kabel, lange Kabel
-		\item hohe Kosten bei verteilt stehenden Pflanzen (pro Pflante ein PlantGuard)
-		\item Behälter muss auch weiterhin höher als die Pflanze stehen
+		\item ziemlich großer Behälter, schlecht zu verstecken, leicht zu kippen, muss höher stehen als die Pflanze
+		\item Abdichtung des Wasserbehälters
+		\item viele und lange Kabel
+		\item hohe Kosten bei verteilt stehenden Pflanzen (pro Pflanze ein PlantGuard)
 	\end{itemize}
 \end{frame}
 
 \begin{frame}{\topic{Kosten}}
 	\begin{itemize}
-		\item Arduino+WiFly: 60\euro
-		\item NetIO+Upgrade: 25\euro
-		\item Ventil: 7,50\euro / Pumpe: 13\euro
+		\item Arduino+WiFly: ab 60\euro
+		\item Ventil: 7,50\euro
 		\item Sensoren: je nach Anzahl/Art
-		\item Platine und Material: wenige\euro
+		\item Platine und Material: wenige \euro
 	\end{itemize}
-	Summe: ca. 35\euro  bis 75\euro  +x
+	Summe: ca. 75\euro
 \end{frame}
 
 \begin{frame}{\topic{Sensoren}}
@@ -96,19 +94,27 @@ weitere Ideen folgen
 
 \begin{frame}{\topic{Temperatur}}
 	\begin{itemize}
-		\item benötigt einen OpAmp, zweiter ist noch frei
+		\item benötigt einen OpAmp
 		\item lange Drähte für freie Positionierung
 		\item misst im Bereich der Raumtemperatur
 		\item direkt auf der Platine
 	\end{itemize}
 \end{frame}
 
+\begin{frame}{\topic{Temperatursensor}}
+\includegraphics[width=0.4\linewidth]{temperatur.jpg}
+\end{frame}
+
 \begin{frame}{\topic{Feuchtigkeit}}
 	\begin{itemize}
 		\item zwei lange Metallstäbe, die mit festem Abstand zueinander in den Boden gesteckt werden
-		\item statt Widerstand messen wir Kapazität $\rightarrow$ je niedriger der Wert, desto feuchter die Erde
-		\item Nutzung von Wechselstrom (durch Umpolen von 2 Pins) schont die Pflanze
+		\item Spannungsmessung mit der Erde als Widerstand. Je niedriger der Wert, desto feuchter die Erde
+		\item Nutzung von Wechselspannung (durch Umpolen von 2 Pins) schont die Pflanze
 	\end{itemize}
+\end{frame}
+
+\begin{frame}{\topic{Feuchtigkeitssensor}}
+\begin{center}\includegraphics[width=\linewidth]{feuchtigkeit.jpg}\end{center}
 \end{frame}
 
 \begin{frame}{\topic{Wasserstand}}
@@ -121,6 +127,10 @@ weitere Ideen folgen
 	\end{itemize}
 \end{frame}
 
+\begin{frame}{\topic{Wasserstandssensor}}
+\includegraphics[width=\linewidth]{wasser.jpg}
+\end{frame}
+
 \begin{frame}{\topic{Aktuatoren/Ventil}}
 	\begin{itemize}
 		\item leise
@@ -130,13 +140,66 @@ weitere Ideen folgen
 	\end{itemize}
 \end{frame}
 
+\begin{frame}
+%Bild von aktueller Platine
+\includegraphics[width=\linewidth]{board_final.jpg}
+\end{frame}
+
+\begin{frame}
+%Bild von aktueller Platine
+\includegraphics[width=\linewidth]{board_plant.jpg}
+\end{frame}
+
+\begin{frame}
+%Bild von aktueller Platine
+\includegraphics[width=\linewidth]{hardware.jpg}
+\end{frame}
+
+\begin{frame}{\topic{Bewässerung}}
+% %früher / heute vergleich
+%     \begin{columns}
+%       \column[c]{.50\linewidth}
+%         \begin{enumerate}
+% 			\item verbreiterte Stellfläche
+% 			\item Messkabel
+% 			\item Ventilansteuerung
+% 			\item Verbindung Vorrat $\rightarrow$ Ventil
+%         \end{enumerate}
+%       \column[c]{.50\linewidth}
+%         \includegraphics[width=150px]{System.jpg}
+%     \end{columns}
+\url{http://www.youtube.com/watch?feature=player_embedded&v=Uci__lRXZsU}
+\end{frame} 
+
+\begin{frame}{\topic{Softwareübersicht}}
+	\begin{itemize}
+		\item 20kb groß (viel für Twitter)
+		\item Regelschleife (wenn zu trocken, gieße)
+		\item Zeitsteuerung mit "Gieße alle X Minuten" möglich
+      \item Wichtige Parameter (z.B. Temperatur- und Feuchteschwellwerte) sind in eine Konfigurationsdatei ausgelagert
+		\item liegt unter \url{http://github.com/jasinai/plant\_guard}
+	\end{itemize}
+\end{frame}
+
+% \begin{frame}{\topic{Bewässerung}}
+% %früher / heute vergleich
+%        \includegraphics[width=350px]{Anschluss.jpg}
+% \end{frame}
+
+\begin{frame}{\topic{Tweets}}
+	\begin{itemize}
+      \item "Mir ist kalt! Stell mich an einen wärmeren Ort. Aktuelle Temperatur: X"
+      \item "Puh, ist das warm! Ein bisschen Schatten wäre nicht schlecht. Aktuelle Temperatur: 33"
+      \item "Mir ist warm. Es ist sind 30 C. Stell mich woanders hin."
+      \item "Mensch, gib mir Wasser!"
+	\end{itemize}
+\end{frame}
 
 \begin{frame}{\topic{mögliche Upgrades}}
 	\begin{itemize}
 		\item Pumpe statt Ventil (+{5\euro}, mehr Strom nötig, etwas lauter)
 		\item mehr Pflanzen pro PlantGuard überwachen
 		\item mehr Sensoren
-		\item drahtlose Verbindung
 		\item weg vom Arduino/WiFly
 		\item Datenbank für Gießparameter
 		\item diverse Hardwareverbesserungen
@@ -153,12 +216,12 @@ weitere Ideen folgen
 	\end{itemize}
 \end{frame}
 
-\begin{frame}{\topic{mehr Pflanzen pro PlantGuard}}
+\begin{frame}{\topic{mehrere Pflanzen pro PlantGuard}}
 	\begin{itemize}
 		\item drückt die Kosten
 		\item spart Strom (gegenüber einem Arduino pro Pflanze)
 		\item mehr Anschlüsse nötig
-      \item Pflanzen sollten dicht beieinander stehen und möglichst selten bewegt werden
+    	\item Pflanzen sollten dicht beieinander stehen und möglichst selten bewegt werden
 		\item DeMux: lange Kabel
 		\item Funkchip: Protokoll ausarbeiten
 	\end{itemize}
@@ -166,41 +229,41 @@ weitere Ideen folgen
 
 \begin{frame}{\topic{weitere/andere Sensoren}}
 	\begin{itemize}
-		\item mehrere Feuchtigkeitssensoren (Erdoberfläche, Topfboden, ...)
+		\item mehrere Feuchtigkeitssensoren
 		\item längere Feuchtigkeitssensoren
 		\item andere Füllstandssensorik
-		\item mehrere Temperatursensoren (zwischen den Blättern, nahe den Wurzeln, ...)
-      \item +Helligkeitssensor
-		\item +Farbsensor, um zwischen Kunstlicht und Sonne zu unterscheiden
+		\item mehrere Temperatursensoren
+      	\item +Helligkeitssensor
+		\item +Farbsensor, Kunstlicht/Sonne
 		\item +Barometer
 		\item +Kippsensor (für Notfälle)
 	\end{itemize}
 \end{frame}
 
-\begin{frame}{\topic{drahtlose Verbindung}}
-	\begin{itemize}
-		\item man spart sich eine (De)Mux-Platine für mehrere Messstationen
-		\item man kann durch Anpassungen am Protokoll mehr Pflanzen versorgen
-		\item muss gesichert werden (Übertragungsfehler, ...)
-		\item keine Kabel quer durch den Raum/die Etage nötig
-	\end{itemize}
-\end{frame}
+% \begin{frame}{\topic{drahtlose Verbindung}}
+% 	\begin{itemize}
+% 		\item man spart sich eine (De)Mux-Platine für mehrere Messstationen
+% 		\item man kann durch Anpassungen am Protokoll mehr Pflanzen versorgen
+% 		\item muss gesichert werden (Übertragungsfehler, ...)
+% 		\item keine Kabel quer durch den Raum/die Etage nötig
+% 	\end{itemize}
+% \end{frame}
 
-\begin{frame}{\topic{ohne Arduino}}
-	\begin{itemize}
-		\item NetIO mit Ethersex + SD-Karte = Webserver
-		\item geringere Kosten
-		\item lange erprobt, sehr ausfallfrei
-		\item sicher, da kein WLan benötigt wird
-		\item kompatibel mit einem Sender-Chip
-	\end{itemize}
-\end{frame}
+% \begin{frame}{\topic{ohne Arduino}}
+% 	\begin{itemize}
+% 		\item NetIO mit Ethersex + SD-Karte = Webserver
+% 		\item geringere Kosten, ca. 25\euro
+% 		\item lange erprobt, sehr ausfallfrei
+% 		\item sicher, da kein WLan benötigt wird
+% 		\item kompatibel mit einem Sender-Chip
+% 	\end{itemize}
+% \end{frame}
 
 \begin{frame}{\topic{Hardwareverbesserungen}}
 	\begin{itemize}
 		\item Hülle/Gehäuse
 		\item professionelle Platine, eigenes Layout
-		\item Vorgeben zweier (De)mux-Schaltung (Norm für die Software)
+		%\item Vorgeben zweier (De)mux-Schaltung (Norm für die Software)
 	\end{itemize}
 \end{frame}
 
@@ -214,65 +277,12 @@ weitere Ideen folgen
 	\end{itemize}
 \end{frame}
 
-\begin{frame}{\topic{Softwareübersicht}}
-	\begin{itemize}
-		\item 20kb groß (viel für Twitter)
-		\item Regelschleife (wenn zu trocken, gieße)
-		\item Zeitsteuerung mit "Gieße alle X Minuten" möglich
-      \item Wichtige Parameter (z.B. Temperatur- und Feuchteschwellwerte) sind in eine Konfigurationsdatei ausgelagert
-		\item liegt unter \url{http://github.com/jasinai/plant\_guard}
-	\end{itemize}
-\end{frame}
-
-
-
-\begin{frame}
-%Bild von aktueller Platine
-\includegraphics[width=350px]{board.jpg}
-\end{frame}
-\begin{frame}{\topic{Temperatursensor}}
-%Bild vom Sensor
-\end{frame}
-
-\begin{frame}{\topic{Bewässerung}}
-%früher / heute vergleich
-       \includegraphics[width=350px]{Anschluss.jpg}
-\end{frame}
-
-\begin{frame}{\topic{Bewässerung}}
-%früher / heute vergleich
-    \begin{columns}
-      \column[c]{.50\textwidth}
-        \begin{enumerate}
-			\item verbreiterte Stellfläche
-			\item Messkabel
-			\item Ventilansteuerung
-			\item Verbindung Vorrat $\rightarrow$ Ventil
-        \end{enumerate}
-      \column[c]{.50\textwidth}
-        \includegraphics[width=150px]{System.jpg}
-    \end{columns}
-\end{frame} 
-
-\begin{frame}{\topic{Tweets}}
-	\begin{itemize}
-      \item "Mir ist kalt! Stell mich an einen wärmeren Ort. Aktuelle Temperatur: X"
-      \item "Puh, ist das warm! Ein bisschen Schatten wäre nicht schlecht. Aktuelle Temperatur: 33"
-      \item "Mir ist warm. Es ist sind 30 C. Stell mich woanders hin."
-      \item "Mensch, gib mir Wasser!"
-	\end{itemize}
-\end{frame}
-
-
-
-{
-\usebackgroundtemplate{\includegraphics[width=\paperwidth]{Back.jpg}}%
+\usebackgroundtemplate{\includegraphics[width=\paperwidth]{Back.png}}%
 \begin{frame}{}
 	\begin{figure}[H]
 		\includegraphics[width=350px]{Danke.png}
 	\end{figure}
 \end{frame}
-}
 
 
 \end{document}
