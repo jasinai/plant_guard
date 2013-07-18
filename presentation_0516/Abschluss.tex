@@ -54,8 +54,8 @@
 
 \begin{frame}{\topic{Vorteile}}
 	\begin{itemize}
-		\item Pflanzeninfos weltweit verfügbar
-		\item Multiuser (z.B. für die Gießvertretung)
+		\item Pflanzeninfos über Twitter weltweit verfügbar
+		%\item Multiuser (z.B. für die Gießvertretung)
 		\item automatische Bewässerung
 		\item erweiterbar (mehr Sensoren, mehr Pflanzen, ...)
 		\item bei Stromausfall wird inzwischen später gegossen
@@ -65,11 +65,11 @@
 \begin{frame}{\topic{Probleme}}
 	\begin{itemize}
 		\item Inkontinenz beim Start, da der Arduino beim Start einige Leitungen auf 1 zieht
-		\item wenn PG zuviel gießt, könnte es überlaufen
+		\item wenn der PlantGuard zuviel gießt, könnte der Topf überlaufen
 		\item ziemlich großer Behälter, schlecht zu verstecken, leicht zu kippen
 		\item Flasche nur mit Silikon 100\% dicht
 		\item viele Kabel, lange Kabel
-		\item hohe Kosten bei verteilt stehenden Pflanzen
+		\item hohe Kosten bei verteilt stehenden Pflanzen (pro Pflante ein PlantGuard)
 		\item Behälter muss auch weiterhin höher als die Pflanze stehen
 	\end{itemize}
 \end{frame}
@@ -106,9 +106,8 @@ weitere Ideen folgen
 \begin{frame}{\topic{Feuchtigkeit}}
 	\begin{itemize}
 		\item zwei lange Metallstäbe, die mit festem Abstand zueinander in den Boden gesteckt werden
-		\item statt Widerstand messen wir Kapazität
-		\item Nutzung von Wechselstrom (durch Umpolen von 2 Pins)
-		\item je niedriger desto feuchter
+		\item statt Widerstand messen wir Kapazität $\rightarrow$ je niedriger der Wert, desto feuchter die Erde
+		\item Nutzung von Wechselstrom (durch Umpolen von 2 Pins) schont die Pflanze
 	\end{itemize}
 \end{frame}
 
@@ -126,7 +125,7 @@ weitere Ideen folgen
 	\begin{itemize}
 		\item leise
 		\item nutzt Schwerkraft
-		\item z.Z. auf Flaschen-Tank begrenzt
+		\item z.Z. auf Flaschen-Tank begrenzt, generell ist der Tank ersetzbar
 		\item man muss das Ventil richtig ausrichten (um nicht den Bereich um die Pflanze zu gießen)
 	\end{itemize}
 \end{frame}
@@ -134,31 +133,32 @@ weitere Ideen folgen
 
 \begin{frame}{\topic{mögliche Upgrades}}
 	\begin{itemize}
-		\item Pumpe statt Ventil (+{5\euro}, mehr Strom nötig, lauter?)
-		\item mehr Pflanzen
+		\item Pumpe statt Ventil (+{5\euro}, mehr Strom nötig, etwas lauter)
+		\item mehr Pflanzen pro PlantGuard überwachen
 		\item mehr Sensoren
 		\item drahtlose Verbindung
 		\item weg vom Arduino/WiFly
-		\item DB für Gießparameter
-		\item Hardwareverbesserungen
+		\item Datenbank für Gießparameter
+		\item diverse Hardwareverbesserungen
 	\end{itemize}
 \end{frame}
 
-\begin{frame}{\topic{Pumpe}}
+\begin{frame}{\topic{Pumpe statt Ventil}}
 	\begin{itemize}
 		\item Ventilansteuerung kompatibel mit einigen Pumpen
 		\item Zeiten müssten angepasst werden
 		\item Füllstand wäre noch wichtiger
 		\item Behälter wäre beliebig, leichter zu verstecken
-		\item kein Leck abzudichten
+		\item kein Leck abzudichten, dafür eventuell mehr Schlauch zu verlegen
 	\end{itemize}
 \end{frame}
 
-\begin{frame}{\topic{mehr Pflanzen}}
+\begin{frame}{\topic{mehr Pflanzen pro PlantGuard}}
 	\begin{itemize}
 		\item drückt die Kosten
-		\item spart Strom (gegenüber 1 Arduino pro Pflanze)
+		\item spart Strom (gegenüber einem Arduino pro Pflanze)
 		\item mehr Anschlüsse nötig
+      \item Pflanzen sollten dicht beieinander stehen und möglichst selten bewegt werden
 		\item DeMux: lange Kabel
 		\item Funkchip: Protokoll ausarbeiten
 	\end{itemize}
@@ -166,14 +166,14 @@ weitere Ideen folgen
 
 \begin{frame}{\topic{weitere/andere Sensoren}}
 	\begin{itemize}
-		\item mehrere Feuchtigkeitssensoren
+		\item mehrere Feuchtigkeitssensoren (Erdoberfläche, Topfboden, ...)
 		\item längere Feuchtigkeitssensoren
 		\item andere Füllstandssensorik
-		\item mehrere Temperatursensoren
-		\item +Mikrofon
-		\item +Farbsensor
+		\item mehrere Temperatursensoren (zwischen den Blättern, nahe den Wurzeln, ...)
+      \item +Helligkeitssensor
+		\item +Farbsensor, um zwischen Kunstlicht und Sonne zu unterscheiden
 		\item +Barometer
-		\item +Kippsensor
+		\item +Kippsensor (für Notfälle)
 	\end{itemize}
 \end{frame}
 
@@ -196,29 +196,30 @@ weitere Ideen folgen
 	\end{itemize}
 \end{frame}
 
-\begin{frame}{\topic{Hardware}}
+\begin{frame}{\topic{Hardwareverbesserungen}}
 	\begin{itemize}
-		\item Hülle
-		\item professionelle Platine
+		\item Hülle/Gehäuse
+		\item professionelle Platine, eigenes Layout
 		\item Vorgeben zweier (De)mux-Schaltung (Norm für die Software)
 	\end{itemize}
 \end{frame}
 
-\begin{frame}{\topic{DB mit Pflanzendaten}}
+\begin{frame}{\topic{Datenbank mit Pflanzendaten}}
 	\begin{itemize}
-		\item man müsste den PG nicht anlernen
+		\item man müsste den PlantGuard nicht anlernen
 		\item dafür aber eine Datenbank mit Informationen füllen und pflegen
-		\item ein Dateiformat wird benötigt
-		\item eine Uploadfunktion braucht man auch
-		\item der User könnte die falsche Pflanze wählen oder in der Größe irren
+		\item Datenbank liefert eine passende config.h
+		\item Upload über die Arduino-IDE bzw. avrdude
+		\item Nachteil: User könnte die falsche Pflanze wählen oder in der Größe irren
 	\end{itemize}
 \end{frame}
 
-\begin{frame}{\topic{Software}}
+\begin{frame}{\topic{Softwareübersicht}}
 	\begin{itemize}
 		\item 20kb groß (viel für Twitter)
 		\item Regelschleife (wenn zu trocken, gieße)
-		\item Zeitsteuerung mit Gieße alle ... eine gewisse Menge möglich
+		\item Zeitsteuerung mit "Gieße alle X Minuten" möglich
+      \item Wichtige Parameter (z.B. Temperatur- und Feuchteschwellwerte) sind in eine Konfigurationsdatei ausgelagert
 		\item liegt unter \url{http://github.com/jasinai/plant\_guard}
 	\end{itemize}
 \end{frame}
@@ -230,9 +231,7 @@ weitere Ideen folgen
 \includegraphics[width=350px]{board.jpg}
 \end{frame}
 \begin{frame}{\topic{Temperatursensor}}
-	\begin{itemize}
-		\item LM35 aus dem Starterkit
-	\end{itemize}
+%Bild vom Sensor
 \end{frame}
 
 \begin{frame}{\topic{Bewässerung}}
@@ -257,11 +256,10 @@ weitere Ideen folgen
 
 \begin{frame}{\topic{Tweets}}
 	\begin{itemize}
-		\item "Ich sitze schon x Tage im Dunkeln! Hat da wer die Rollos vergessen?"
-		\item "Einen wunderschönen Morgen…" / "Gute Nacht!" (Uhr/Lichtsensor)
-		\item "Mir ist langweilig... komm doch mal vorbei und erzähl mir was!” (Zufallsereignis)
-		\item "Wasserstand niedrig: Raum x: Pflanzen-ID, Raum y: Hugo, Otto"
-		\item "Die Pflanzen Hugo, Otto und Karla wurden erfolgreich gewässert!"
+      \item "Mir ist kalt! Stell mich an einen wärmeren Ort. Aktuelle Temperatur: X"
+      \item "Puh, ist das warm! Ein bisschen Schatten wäre nicht schlecht. Aktuelle Temperatur: 33"
+      \item "Mir ist warm. Es ist sind 30°C. Stell mich woanders hin."
+      \item "Mensch, gib mir Wasser!"
 	\end{itemize}
 \end{frame}
 
