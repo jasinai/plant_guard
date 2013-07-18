@@ -65,6 +65,7 @@
 \begin{frame}{\topic{Probleme}}
 	\begin{itemize}
 		\item Inkontinenz beim Start, da der Arduino beim Start einige Leitungen auf 1 zieht
+		\item wenn PG zuviel gießt, könnte es überlaufen
 		\item ziemlich großer Behälter, schlecht zu verstecken, leicht zu kippen
 		\item Flasche nur mit Silikon 100\% dicht
 		\item viele Kabel, lange Kabel
@@ -139,6 +140,7 @@ weitere Ideen folgen
 		\item drahtlose Verbindung
 		\item weg vom Arduino/WiFly
 		\item DB für Gießparameter
+		\item Hardwareverbesserungen
 	\end{itemize}
 \end{frame}
 
@@ -194,6 +196,14 @@ weitere Ideen folgen
 	\end{itemize}
 \end{frame}
 
+\begin{frame}{\topic{Hardware}}
+	\begin{itemize}
+		\item Hülle
+		\item professionelle Platine
+		\item Vorgeben zweier (De)mux-Schaltung (Norm für die Software)
+	\end{itemize}
+\end{frame}
+
 \begin{frame}{\topic{DB mit Pflanzendaten}}
 	\begin{itemize}
 		\item man müsste den PG nicht anlernen
@@ -201,6 +211,15 @@ weitere Ideen folgen
 		\item ein Dateiformat wird benötigt
 		\item eine Uploadfunktion braucht man auch
 		\item der User könnte die falsche Pflanze wählen oder in der Größe irren
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{\topic{Software}}
+	\begin{itemize}
+		\item 20kb groß (viel für Twitter)
+		\item Regelschleife (wenn zu trocken, gieße)
+		\item Zeitsteuerung mit Gieße alle ... eine gewisse Menge möglich
+		\item liegt unter \url{http://github.com/jasinai/plant\_guard}
 	\end{itemize}
 \end{frame}
 
